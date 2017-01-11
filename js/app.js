@@ -16,6 +16,8 @@ bigText: 'На самом деле платно, просто нужно про�
 }
 ];
 
+window.ee = new EventEmitter();
+
 var Article = React.createClass({
   propTypes: {
     data: React.PropTypes.shape({
@@ -97,7 +99,13 @@ var Add = React.createClass({
     event.preventDefault;
     var author = ReactDOM.findDOMNode(this.refs.author).value;
     var text = ReactDOM.findDOMNode(this.refs.text).value;
-    alert(author + '\n' + text);
+    var item = [{
+      author: author,
+      text: text,
+      bigText: '...'
+    }];
+    
+    window.ee.emit('News.add', item);
   },
   onFieldChange: function(fieldName, event) {
     if (event.target.value.trim().length > 0) {

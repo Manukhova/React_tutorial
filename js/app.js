@@ -97,6 +97,7 @@ var Add = React.createClass({
   },
   onButtonClick: function(event) {
     event.preventDefault;
+    var textEl = ReactDOM.findDOMNode(this.refs.text);
     var author = ReactDOM.findDOMNode(this.refs.author).value;
     var text = ReactDOM.findDOMNode(this.refs.text).value;
     var item = [{
@@ -104,8 +105,10 @@ var Add = React.createClass({
       text: text,
       bigText: '...'
     }];
-    
-    window.ee.emit('News.add', item);
+
+    window.ee.emit('News.add', item); // сгенерируй событие 'News.add' и передай в качестве данных - item.
+    textEl.value = '';
+    this.setState({textIsEmpty: true});
   },
   onFieldChange: function(fieldName, event) {
     if (event.target.value.trim().length > 0) {
@@ -142,15 +145,16 @@ var App = React.createClass({
     };
   },
   componentDidMount: function() {
-/* Слушай событие "Создана новость"
-если событие произошло, обнови this.state.news
-*/
+    var self = this;
+    window.ee.addListener('News.add', function(item) {
+      var nextNews = item.concat(self.state.news);
+      self.setState({news: nextNews});
+  });
   },
   componentWillUnmount: function() {
-/* Больше не слушай событие "Создана новость" */
+    window.ee.removeListener('News.add');
   },
   render: function() {
-    console.log('render');
     return (
       <div className="app">
         <Add/>
